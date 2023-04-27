@@ -159,7 +159,6 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     var leftViews: [UIView] = []
     var floatViews: [UIView] = []
     var rightViews: [UIView] = []
-    var containerView: UIView = UIView()
     
     /**
      * This method setups the internal data structures to setup the UI shown on the accessory view,
@@ -171,7 +170,6 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         for view in views {
             view.removeFromSuperview()
         }
-        containerView.removeFromSuperview()
         views = []
         leftViews = []
         rightViews = []
@@ -285,39 +283,23 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         views.append(contentsOf: floatViews)
         views.append(contentsOf: rightViews)
         
-        //containerView = UIView(frame: self.frame)
-        
-        
-        //containerView.bottomAnchor.constraint(greaterThanOrEqualTo: self.safeAreaLayoutGuide.bottomAnchor).isActive = true
         for view in views {
-            containerView.addSubview(view)
+            addSubview(view)
         }
         layoutSubviews ()
        
     }
-    //var didSetConstraint: Bool = false
+   
 
     override
     public func didMoveToWindow() {
         guard let window = window else { return }
-            self.translatesAutoresizingMaskIntoConstraints = false
-        constrainContainer()
-        self.layoutIfNeeded()
-        setupUI()
-//        let constraint = containerView.bottomAnchor.constraint(lessThanOrEqualTo: window.safeAreaLayoutGuide.bottomAnchor)
-//        constraint.isActive = true
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.bottomAnchor.constraint(lessThanOrEqualTo: window.safeAreaLayoutGuide.bottomAnchor).isActive = true
+
     }
     
-    func constrainContainer() {
-        containerView.removeFromSuperview()
-        addSubview(containerView)
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        containerView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        containerView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        containerView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-       // containerView.bottomAnchor.constraint(lessThanOrEqualTo: window!.safeAreaLayoutGuide.bottomAnchor).isActive = true
-    }
+
 
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
