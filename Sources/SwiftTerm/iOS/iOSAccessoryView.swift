@@ -149,7 +149,6 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
             tv.inputView = nil
         }
         if wasResponder { _ = tv.becomeFirstResponder() }
-
     }
 
     @objc func toggleTouch (_ sender: UIButton) {
@@ -160,6 +159,7 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
     var leftViews: [UIView] = []
     var floatViews: [UIView] = []
     var rightViews: [UIView] = []
+    var containerView: UIView = UIView()
     
     /**
      * This method setups the internal data structures to setup the UI shown on the accessory view,
@@ -171,6 +171,7 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         for view in views {
             view.removeFromSuperview()
         }
+        containerView.removeFromSuperview()
         views = []
         leftViews = []
         rightViews = []
@@ -203,7 +204,11 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         let minWidth: CGFloat = useSmall ? 20.0 : (UIDevice.current.userInterfaceIdiom == .phone) ? 22 : 32
         let maxFuncKeyWidth = (minWidth + buttonPad) * 10
         let importantKeysCount: Double = useSmall ? 11 : 13
-        let maxSpaceForImportantKeys = frame.width - maxFuncKeyWidth - buttonPad
+        let window = UIApplication.shared.windows.first
+        let leadingPadding = window?.safeAreaInsets.left ?? 0.00
+        let trailingPadding = window?.safeAreaInsets.right ?? 0.00
+        let totalPadding = leadingPadding + trailingPadding
+        let maxSpaceForImportantKeys = frame.width - totalPadding - maxFuncKeyWidth - buttonPad
         var aditionalSpaceForImportantKeys: CGFloat = 0
         if maxSpaceForImportantKeys > 0 {
             aditionalSpaceForImportantKeys =  maxSpaceForImportantKeys / importantKeysCount
@@ -251,7 +256,9 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         if UIDevice.current.userInterfaceIdiom == .phone && frame.width > 500 {
             additionalUsedSpaceToAdd = 50.0
         }
-        var left = frame.width - usedSpace - additionalUsedSpaceToAdd
+        
+        
+        var left = frame.width - totalPadding - usedSpace - additionalUsedSpaceToAdd
         func addOptional (_ text: String, _ selector: Selector) {
             left -= minWidth + buttonPad
             
@@ -278,13 +285,41 @@ public class TerminalAccessory: UIInputView, UIInputViewAudioFeedback {
         views.append(contentsOf: floatViews)
         views.append(contentsOf: rightViews)
         
-
+        //containerView = UIView(frame: self.frame)
+        
+        
+        //containerView.bottomAnchor.constraint(greaterThanOrEqualTo: self.safeAreaLayoutGuide.bottomAnchor).isActive = true
         for view in views {
-            addSubview(view)
+            containerView.addSubview(view)
         }
         layoutSubviews ()
+       
+    }
+    //var didSetConstraint: Bool = false
+
+    override
+    public func didMoveToWindow() {
+        guard let window = window else { return }
+            self.translatesAutoresizingMaskIntoConstraints = false
+        constrainContainer()
+        self.layoutIfNeeded()
+        setupUI()
+//        let constraint = containerView.bottomAnchor.constraint(lessThanOrEqualTo: window.safeAreaLayoutGuide.bottomAnchor)
+//        constraint.isActive = true
     }
     
+    func constrainContainer() {
+        containerView.removeFromSuperview()
+        addSubview(containerView)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        containerView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        containerView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        containerView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+       // containerView.bottomAnchor.constraint(lessThanOrEqualTo: window!.safeAreaLayoutGuide.bottomAnchor).isActive = true
+    }
+
+
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
             super.traitCollectionDidChange(previousTraitCollection)
 return
@@ -299,7 +334,10 @@ return
     
     var buttonPad = 4.0
     public override func layoutSubviews() {
-        var x: CGFloat = 2
+        
+        let leadingPadding = window?.safeAreaInsets.left ?? 0.00
+        let trailingPadding = window?.safeAreaInsets.right ?? 0.00
+        var x: CGFloat = 2 + leadingPadding
         let dh = views.reduce (0) { max ($0, $1.frame.size.height )}
         
         for view in leftViews + floatViews {
@@ -308,7 +346,7 @@ return
             x += size.width + buttonPad
         }
         
-        var right = frame.width - 2
+        var right = frame.width - 2 - trailingPadding
         for view in rightViews.reversed() {
             let size = view.frame.size
             view.frame = CGRect (x: right-size.width, y: 4, width: size.width, height: dh)
