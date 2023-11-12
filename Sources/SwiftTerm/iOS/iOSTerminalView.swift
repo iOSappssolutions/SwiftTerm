@@ -741,12 +741,12 @@ open class TerminalView: UIScrollView, UITextInputTraits, UIKeyInput, UIScrollVi
     /// You can set this property to a UIView to be your input accessory, by default
     /// this is an instance of `TerminalAccessory`
     ///
-    public override var inputAccessoryView: UIView? {
-        get { _inputAccessory }
-        set {
-            _inputAccessory = newValue
-        }
-    }
+//    public override var inputAccessoryView: UIView? {
+//        get { _inputAccessory }
+//        set {
+//            _inputAccessory = newValue
+//        }
+//    }
 
     ///
     /// You can set this property to a UIView to be your input accessory, by default
@@ -768,13 +768,13 @@ open class TerminalView: UIScrollView, UITextInputTraits, UIKeyInput, UIScrollVi
 
     func setupAccessoryView ()
     {
-        let short = UIDevice.current.userInterfaceIdiom == .phone
-        let ta = TerminalAccessory(frame: CGRect(x: 0, y: 0, width: frame.width, height: short ? 36 : 48),
-                                   inputViewStyle: .keyboard, container: self)
-        inputAssistantItem.leadingBarButtonGroups = []
-        inputAssistantItem.trailingBarButtonGroups = []
-        ta.sizeToFit()
-        inputAccessoryView = ta
+//        let short = UIDevice.current.userInterfaceIdiom == .phone
+//        let ta = TerminalAccessory(frame: CGRect(x: 0, y: 0, width: frame.width, height: short ? 36 : 48),
+//                                   inputViewStyle: .keyboard, container: self)
+//        inputAssistantItem.leadingBarButtonGroups = []
+//        inputAssistantItem.trailingBarButtonGroups = []
+//        ta.sizeToFit()
+//        inputAccessoryView = ta
         
         //inputAccessoryView?.autAoresizingMask = .flexibleHeight
     }
